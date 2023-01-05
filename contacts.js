@@ -7,65 +7,77 @@ const contactsPath = path.join(__dirname, 'db/contacts.json')
 
 ///////////////////////////////////////////////////////////////////////
 
-function listContacts() {
-  fs.readFile(contactsPath)
-  .then(data => {
-    const parsedContacts = JSON.parse(data);
-    return console.table(parsedContacts)
-  })
+// function listContacts() {
+//   fs.readFile(contactsPath)
+//   .then(data => {
+//     const parsedContacts = JSON.parse(data);
+//     return console.table(parsedContacts)
+//   })
 
-  .catch(err => console.log(err.message));
+//   .catch(err => console.log(err.message));
+// }
+
+///////////////////////////////////////////////////////////
+
+async function listContacts() {
+  try {
+    const data = await fs.readFile(contactsPath, "utf-8");
+
+    return JSON.parse(data);
+  } catch (err) {
+    console.log(err.message);
+  }
 }
 
-//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 
-function getContactById(contactId ) {
-  fs.readFile(contactsPath)
-  .then(data => {
-    const parsedContacts = JSON.parse(data);
-    const result = parsedContacts.find(item => item.id === String(contactId))
+async function getContactById(contactId) {
+  try {
+    const data = await fs.readFile(contactsPath, "utf-8");
+    const contacts = JSON.parse(data);
+    const result = contacts.find(item => item.id === String(contactId))
+
     if (!result){
       return console.log((`Contact with id = ${contactId} not found!`))
     } else{
-      return console.log(result)
+      return result
     }
-  })
-
-  .catch(err => console.log(err.message));
+  } catch (err) {
+    console.log(err.message);
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
-function removeContact(contactId) {
-  fs.readFile(contactsPath)
-  .then(data => {
-    const parsedContacts = JSON.parse(data);
-    const indx = parsedContacts.findIndex(item => item.id === String(contactId))
+async function removeContact(contactId) {
+  try{
+  const data = await fs.readFile(contactsPath, "utf-8");
+  const parsedContacts = JSON.parse(data);
+  const indx = parsedContacts.findIndex(item => item.id === String(contactId))
     if (!indx === -1){
       return console.log("There is no contact with such id")
     } 
-
     const [removeContact] = parsedContacts.splice(indx,1)
     fs.writeFile(contactsPath, JSON.stringify(parsedContacts))
-    return console.log(removeContact)
-  })
-  .catch(err => console.log(err.message));
+    return removeContact
+  } catch(err){
+    console.log(err.message)}
 }
 
 ///////////////////////////////////////////////////////////////////////
 
-function addContact(name, email, phone) {
-  fs.readFile(contactsPath)
-  .then(data => {
+async function addContact(name, email, phone) {
+  try{
+    const data = await fs.readFile(contactsPath, "utf-8");
     const parsedContacts = JSON.parse(data);
     const newContacts = { id : v4(), name, email,phone }
     parsedContacts.push(newContacts)
     fs.writeFile(contactsPath, JSON.stringify(parsedContacts))
     
-    return console.log(parsedContacts);
-  })
+    return parsedContacts
 
-  .catch(err => console.log(err.message));
+    } catch(err){
+      console.log(err.message)}
 }
 
 
